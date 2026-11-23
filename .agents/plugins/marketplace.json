@@ -1,0 +1,20 @@
+{
+  "name": "osk-plugins",
+  "interface": {
+    "displayName": "Osk Plugins"
+  },
+  "plugins": [
+    {
+      "name": "osk",
+      "source": {
+        "source": "local",
+        "path": "./plugins/osk"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

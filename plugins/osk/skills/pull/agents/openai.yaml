@@ -1,0 +1,4 @@
+interface:
+  display_name: "Osk: Sync"
+  short_description: "현재 작업을 먼저 커밋하고 최신 기준 브랜치를 병합합니다."
+  default_prompt: "Use $pull to verify and commit the current branch work with a Korean message, merge the latest base branch, and resolve conflicts in favor of the current branch intent."
