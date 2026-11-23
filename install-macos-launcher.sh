@@ -1,6 +1,57 @@
 #!/bin/bash
 set -euo pipefail
 
+add_launcher_to_dock() {
+  local dock_change
+  if ! dock_change=$(/usr/bin/osascript -l JavaScript - "$1" "$2" <<'JXA'
+ObjC.import('Foundation');
+
+function run([launcherPath, bundleID]) {
+    const key = 'persistent-apps';
+    const dock = $.NSUserDefaults.alloc.initWithSuiteName('com.apple.dock');
+    const existing = dock.arrayForKey(key);
+    const apps = existing.isNil() ? $.NSMutableArray.array : existing.mutableCopy;
+    const launcherURL = ObjC.unwrap($.NSURL.fileURLWithPathIsDirectory(launcherPath, true).absoluteString);
+    const tile = $({
+        'tile-type': 'file-tile',
+        'tile-data': {
+            'bundle-identifier': bundleID,
+            'file-data': { '_CFURLString': launcherURL, '_CFURLStringType': $.NSNumber.numberWithInteger(15) },
+            'file-label': 'Codex Osk Launcher',
+            'file-type': $.NSNumber.numberWithInteger(41)
+        }
+    });
+
+    let launcherIndex = -1;
+    for (let index = 0; index < apps.count; index++) {
+        const data = apps.objectAtIndex(index).objectForKey('tile-data');
+        if (data.isNil()) continue;
+        const file = data.objectForKey('file-data');
+        if (!file.isNil()) {
+            const location = ObjC.unwrap(file.objectForKey('_CFURLString'));
+            if (location === launcherURL || location === launcherPath) return 'present';
+        }
+        if (ObjC.unwrap(data.objectForKey('bundle-identifier')) === bundleID) launcherIndex = index;
+    }
+
+    if (launcherIndex < 0) apps.addObject(tile);
+    else apps.replaceObjectAtIndexWithObject(launcherIndex, tile);
+    dock.setObjectForKey(apps, key);
+    if (!dock.synchronize) throw new Error('Dock 설정을 저장하지 못했습니다.');
+    return 'updated';
+}
+JXA
+  ); then
+    printf 'Dock에 추가하지 못했습니다. 실행기 위치: %s\n' "$1" >&2
+    return 1
+  fi
+
+  if [[ "$dock_change" == updated ]]; then
+    /usr/bin/killall -u "$(/usr/bin/id -un)" Dock 2>/dev/null || true
+  fi
+  printf '%s\n' 'Dock에서 Codex Osk Launcher를 여세요.'
+}
+
 install_launcher() (
   applications_dir=$1
   launcher_name='Codex Osk Launcher.app'
@@ -19,7 +70,8 @@ install_launcher() (
       exit 1
     fi
     printf '이미 설치되어 있습니다: %s\n' "$launcher"
-    exit 0
+    add_launcher_to_dock "$launcher" "$bundle_id"
+    exit
   fi
 
   /bin/mkdir -p "$applications_dir"
@@ -87,7 +139,7 @@ LAUNCH_SCRIPT
     exit 1
   fi
   printf '설치 완료: %s\n' "$launcher"
-  printf '%s\n' 'Finder에서 앱을 열거나 Dock에 추가하세요.'
+  add_launcher_to_dock "$launcher" "$bundle_id"
 )
 
 install_launcher "$HOME/Applications"

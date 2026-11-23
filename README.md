@@ -23,12 +23,12 @@ Codex 데스크톱 앱을 사용한다면 앱을 재시작하고 새 채팅에�
 
 ## Mac에서 Codex를 열 때 갱신하기
 
-Codex 데스크톱 앱이 설치된 Mac에서 터미널에 다음 한 줄을 실행하세요. Osk 플러그인과 실행기가 함께 설치됩니다.
+Codex 데스크톱 앱이 설치된 Mac에서 터미널에 다음 한 줄을 실행하세요. Osk 플러그인과 실행기를 설치하고 **Codex Osk Launcher**를 Dock에 추가합니다.
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/oskarbuzzni/osk-codex-plugin/main/install-macos-launcher.sh | /bin/bash
 ```
 
-Finder에서 **폴더로 이동**(`⌘⇧G`)을 열고 `~/Applications`를 입력하세요. **Codex Osk Launcher**를 Dock으로 끌어놓고 이 아이콘으로 Codex를 시작하세요. 실행기는 Osk 갱신을 마친 뒤 Codex를 엽니다. 갱신에 실패하면 알림을 띄우고 Codex를 엽니다.
+Dock의 **Codex Osk Launcher**로 Codex를 시작하세요. 실행기는 Osk 갱신을 마친 뒤 Codex를 엽니다. 갱신에 실패하면 알림을 띄우고 Codex를 엽니다. 실행기를 이미 설치했다면 같은 명령으로 Dock에 추가할 수 있습니다.
 
 수동으로 갱신하려면 터미널에서 `codex plugin marketplace upgrade osk-plugins`를 실행한 뒤 Codex 앱을 다시 여세요.
