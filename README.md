@@ -23,22 +23,12 @@ Codex 데스크톱 앱을 사용한다면 앱을 재시작하고 새 채팅에�
 
 ## Mac에서 Codex를 열 때 갱신하기
 
-플러그인을 설치한 Mac에서 **단축어 → 설정 → 고급 → 스크립트 실행 허용**을 켜고, 새 단축어에 **셸 스크립트 실행** 동작을 추가하세요. 다음 스크립트를 붙여 넣고 **파일 → Dock에 추가**를 선택하세요. 이 단축어로 열면 Osk를 갱신한 뒤 Codex를 엽니다. 갱신에 실패하면 알림을 띄우고 Codex를 엽니다.
+Codex 데스크톱 앱이 설치된 Mac에서 터미널에 다음 한 줄을 실행하세요. Osk 플러그인과 실행기가 함께 설치됩니다.
 
-```sh
-app_path=$(/usr/bin/osascript -e 'POSIX path of (path to application id "com.openai.codex")') || exit 1
-for codex_cli in \
-  "${app_path%/}/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex" \
-  "${app_path%/}/Contents/Resources/codex" \
-  /opt/homebrew/bin/codex /usr/local/bin/codex; do
-  [ -x "$codex_cli" ] && break
-done
-
-if [ ! -x "$codex_cli" ] || ! "$codex_cli" plugin marketplace upgrade osk-plugins; then
-  /usr/bin/osascript -e 'display notification "Osk 스킬을 갱신하지 못했습니다." with title "Codex 시작"' || true
-fi
-
-/usr/bin/open -b com.openai.codex
+```bash
+curl -fsSL https://raw.githubusercontent.com/oskarbuzzni/osk-codex-plugin/main/install-macos-launcher.sh | /bin/bash
 ```
+
+Finder에서 **폴더로 이동**(`⌘⇧G`)을 열고 `~/Applications`를 입력하세요. **Codex Osk Launcher**를 Dock으로 끌어놓고 이 아이콘으로 Codex를 시작하세요. 실행기는 Osk 갱신을 마친 뒤 Codex를 엽니다. 갱신에 실패하면 알림을 띄우고 Codex를 엽니다.
 
 수동으로 갱신하려면 터미널에서 `codex plugin marketplace upgrade osk-plugins`를 실행한 뒤 Codex 앱을 다시 여세요.
